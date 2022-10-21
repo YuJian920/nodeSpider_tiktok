@@ -8,7 +8,7 @@
 
 在使用之前请先修改 config/config.json 配置文件
 
-```JSON
+```
   "user": ""               # 用户链接，目前只支持短链
   "type": "post" | "like", # post-用户发布 & like-用户喜欢
   "limit": 0               # 下载数限制 0 表现无限制 下载所有视频
