@@ -55,6 +55,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
       spiderQueue.push(videoInfo);
     }
   }
+  console.log("内容获取完成 有效列表项", spiderQueue.length, "项");
 
   return { spiderQueue, userInfo };
 };
