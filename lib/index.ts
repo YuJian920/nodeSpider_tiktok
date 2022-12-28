@@ -14,7 +14,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   console.log(`开始获取 ===> ${type === "like" ? "喜欢" : "发布"}列表`);
 
   const userSecId = await getUserSecId(user);
-  const userInfo = await getUserInfo(userSecId);
+  // const userInfo = await getUserInfo(userSecId);
 
   let spiderQueue: SpiderQueue[] = [];
   let _has_more = true;
@@ -57,10 +57,10 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   }
   console.log("内容获取完成 有效列表项", spiderQueue.length, "项");
 
-  return { spiderQueue, userInfo };
+  return { spiderQueue };
 };
 
 (async () => {
-  const { spiderQueue, userInfo } = await loadQueue(user, type, limit);
-  await saveVideo(spiderQueue, userInfo.nickname + "_" + type);
+  const { spiderQueue } = await loadQueue(user, type, limit);
+  await saveVideo(spiderQueue, type);
 })();

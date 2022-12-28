@@ -4,7 +4,7 @@ import { TiktokUserInfo, TiktokUserLike } from "../type";
 import { getTiktokSecId } from "../utils";
 import { headerOption } from "../utils/config";
 
-const baseUrl = "https://www.iesdouyin.com/web/api/v2/";
+const baseUrl = "https://m.douyin.com/web/api/v2/";
 
 /**
  * 基础请求封装
@@ -47,8 +47,12 @@ export const getUserInfo = async (sec_uid: string) => {
  * @param sec_uid
  * @param max_cursor
  */
-export const getUserVideo = async (sec_uid: string, max_cursor: number, type: string) => {
-  const userLikeApi = `aweme/${type}?`;
+export const getUserVideo = async (
+  sec_uid: string,
+  max_cursor: number,
+  type: string
+) => {
+  const userLikeApi = `aweme/${type}?reflow_source=reflow_page&`;
   const params = { sec_uid, count: "31", max_cursor };
 
   const responsePending = await request(userLikeApi + qs.stringify(params));
