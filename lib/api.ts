@@ -4,7 +4,9 @@ import { TiktokUserInfo, TiktokUserLike } from "../type";
 import { getTiktokSecId } from "../utils";
 import { headerOption } from "../utils/config";
 
-const baseUrl = "https://m.douyin.com/web/api/v2/";
+// const baseUrl = "https://m.douyin.com/web/api/v2/";
+const postBaseUrl = "https://www.iesdouyin.com/aweme/v1/web/aweme/post/?";
+const likeBaseUrl = "https://www.iesdouyin.com/web/api/v2/aweme/like/?";
 
 /**
  * 基础请求封装
@@ -13,7 +15,7 @@ const baseUrl = "https://m.douyin.com/web/api/v2/";
  * @returns
  */
 const request = async (api: string, option: RequestInit = {}) => {
-  return await fetch(baseUrl + api, { headers: headerOption, ...option });
+  return await fetch(api, { headers: headerOption, ...option });
 };
 
 /**
@@ -21,7 +23,7 @@ const request = async (api: string, option: RequestInit = {}) => {
  * @param userUrl
  */
 export const getUserSecId = async (userUrl: string) => {
-  const response = await fetch(userUrl, { headers: headerOption });
+  const response = await request(userUrl);
   const userSecId = getTiktokSecId(response.url);
 
   if (!userSecId) throw new Error("Sec_Id 获取失败");
@@ -52,10 +54,10 @@ export const getUserVideo = async (
   max_cursor: number,
   type: string
 ) => {
-  const userLikeApi = `aweme/${type}?reflow_source=reflow_page&`;
-  const params = { sec_uid, count: "31", max_cursor };
+  const params = { sec_uid, count: 35, max_cursor, aid: 1128 };
+  let requestUrl = type === "like" ? likeBaseUrl : postBaseUrl;
 
-  const responsePending = await request(userLikeApi + qs.stringify(params));
+  const responsePending = await request(requestUrl + qs.stringify(params));
   const response = (await responsePending.json()) as TiktokUserLike;
 
   if (response.status_code !== 0) throw new Error("列表获取失败");
