@@ -1,10 +1,10 @@
-import download from "download";
 import filenamify from "filenamify";
-import { ensureDir, readdir } from "fs-extra";
+import { ensureDir } from "fs-extra";
+import download from "nodejs-file-downloader";
 import path from "path";
+import { downloadDir } from "../config/config.json";
 import { SpiderQueue } from "../type";
-
-const downloadDir = "download/";
+import progressBar from "../utils/progressBar";
 
 export const saveVideo = async (videoQueue: SpiderQueue[], dir: string) => {
   console.log("开始下载 ===>", dir);
@@ -13,18 +13,24 @@ export const saveVideo = async (videoQueue: SpiderQueue[], dir: string) => {
 
   try {
     await ensureDir(targetDir);
-    const alreadyPath = await readdir(targetDir);
-
     for (const item of videoQueue) {
       try {
-        console.log("正在下载 ===>", ++_downloadCount, "项");
+        console.log("正在下载 ===>", ++_downloadCount, "项", _downloadCount === 1 ? "" : "\n");
         const targetFileName = `${item.id}-${filenamify(item.desc)}.mp4`;
-        // 跳过下载已存在文件
-        if (alreadyPath.includes(targetFileName)) {
-          console.log("跳过已存在 ===>", item.id);
-          continue;
-        }
-        await download(item.url, targetDir, { filename: targetFileName });
+        let progress = null
+        let downloadHelper = new download({
+          url: item.url,
+          directory: targetDir,
+          fileName: targetFileName,
+          skipExistingFileName: true,
+          onProgress: (percentage) => {
+            progress = new progressBar('下载进度', 50);
+            progress.render({ completed: percentage, total: 100 });
+          },
+        });
+
+        await downloadHelper.download();
+        downloadHelper = null
       } catch (error) {
         console.log("下载失败 ===>", item.id);
         continue;
