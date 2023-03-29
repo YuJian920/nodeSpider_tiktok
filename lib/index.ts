@@ -1,6 +1,6 @@
 import { limit, type, user } from "../config/config.json";
 import { SpiderQueue } from "../type";
-import { getUserInfo, getUserSecId, getUserVideo } from "./api";
+import { getUserLikeVideo, getUserPostVideo, getUserSecId } from "./api";
 import { saveVideo } from "./download";
 
 /**
@@ -14,20 +14,22 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   console.log(`开始获取 ===> ${type === "like" ? "喜欢" : "发布"}列表`);
 
   const userSecId = await getUserSecId(user);
-  // const userInfo = await getUserInfo(userSecId);
 
   let spiderQueue: SpiderQueue[] = [];
   let _has_more = true;
   let _max_cursor = 0;
   let _pageCount = 0;
 
+  let getUserVideo: any = () => ({});
+  if (type === "like") getUserVideo = getUserLikeVideo;
+  if (type === "post") getUserVideo = getUserPostVideo;
+
   // 循环分页
   while (_has_more) {
     console.log("获取内容 ===>", ++_pageCount, "页");
     const { list, max_cursor, has_more } = await getUserVideo(
       userSecId,
-      _max_cursor,
-      type
+      _max_cursor
     );
     // 外部变量控制循环
     _has_more = has_more;

@@ -4,6 +4,7 @@
     "module": "commonjs",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true
   }
 }

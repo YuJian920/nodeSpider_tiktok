@@ -1,12 +1,3 @@
-export interface TiktokUserInfo {
-  user_info: {
-    nickname: string;
-    uid: string;
-    short_id: string;
-    sec_uid: string;
-  };
-}
-
 export interface TiktokUserLike {
   status_code: number;
   aweme_list: TiktokUserLikeList[];
