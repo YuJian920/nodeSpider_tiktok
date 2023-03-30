@@ -3,6 +3,7 @@ import qs from "qs";
 import { TiktokUserLike } from "../type";
 import { getCookies, getTiktokSecId, getXBogus } from "../utils";
 import { headerOption } from "../utils/config";
+import { max_retry } from "../config/config.json";
 
 const postBaseUrl = "https://www.douyin.com/aweme/v1/web/aweme/post/?";
 const likeBaseUrl = "https://www.douyin.com/aweme/v1/web/aweme/favorite/?";
@@ -96,7 +97,7 @@ const getUserVideo = (type: string) => {
     let loopCount = 0;
     let responseText = "";
 
-    while (loopCount <= 50 && responseText === "") {
+    while (loopCount <= max_retry && responseText === "") {
       if (loopCount > 0) console.log(`第${loopCount}次请求...`);
       loopCount += 1;
       const responsePending = await request(requestUrl + requestParams, {
