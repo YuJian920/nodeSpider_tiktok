@@ -1,12 +1,8 @@
 import fetch from "node-fetch";
-import qs from "qs";
 import { TiktokUserLike } from "../type";
-import { getCookies, getTiktokSecId, getXBogus } from "../utils";
-import { headerOption } from "../utils/config";
+import { getCookies, getTiktokSecId, transformParams } from "../utils";
+import { headerOption, likeBaseUrl, postBaseUrl } from "../utils/config";
 import { max_retry } from "../config/config.json";
-
-const postBaseUrl = "https://www.douyin.com/aweme/v1/web/aweme/post/?";
-const likeBaseUrl = "https://www.douyin.com/aweme/v1/web/aweme/favorite/?";
 
 /**
  * 基础请求封装
@@ -71,27 +67,6 @@ const getTTWid = async () => {
 };
 
 /**
- * 拼接请求参数
- * @param sec_user_id
- * @param max_cursor
- * @returns
- */
-const transformParams = (sec_user_id: string, max_cursor: number) => {
-  const params = {
-    sec_user_id,
-    count: 35,
-    max_cursor,
-    aid: 1128,
-    version_name: "23.5.0",
-    device_platform: "android",
-    os_version: "2333",
-  };
-  params["X-Bogus"] = getXBogus(qs.stringify(params));
-
-  return qs.stringify(params);
-};
-
-/**
  * 生成获取函数
  * @param type
  * @returns
@@ -115,7 +90,7 @@ const getUserVideo = (type: string) => {
       });
       responseText = await responsePending.text();
 
-      // 每尝试 10 此等待 2s
+      // 每尝试 10 次等待 2s
       if (loopCount % 10 === 0 && !responseText) {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         requestParams = transformParams(sec_uid, max_cursor);

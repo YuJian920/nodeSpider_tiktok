@@ -1,9 +1,11 @@
 import filenamify from "filenamify";
 import { ensureDir } from "fs-extra";
+import { extname, resolve } from "node:path";
 import download from "nodejs-file-downloader";
-import { resolve, extname } from "node:path";
 import { downloadDir } from "../config/config.json";
 import { SpiderQueue } from "../type";
+import { getFileSize, transformDownloadUrl } from "../utils";
+import { headerOption } from "../utils/config";
 import progressBar from "../utils/progressBar";
 
 export const saveVideo = async (videoQueue: SpiderQueue[], dir: string) => {
@@ -14,26 +16,32 @@ export const saveVideo = async (videoQueue: SpiderQueue[], dir: string) => {
   try {
     await ensureDir(targetDir);
     for (const item of videoQueue) {
+      let totalSize = "0"
       try {
-        console.log("正在下载 ===>", ++_downloadCount, "项", _downloadCount === 1 ? "" : "\n");
-        let progress = null
+        console.log(`正在下载 ===> ${++_downloadCount}项${_downloadCount === 1 ? "" : "\n"}`);
+        let progress = null;
         let downloadHelper = new download({
-          url: item.url,
+          url: transformDownloadUrl(item.url),
           directory: targetDir,
           skipExistingFileName: true,
+          headers: headerOption,
+          onResponse: (response) => {
+            totalSize = getFileSize(response.headers["content-length"]);
+            return true;
+          },
           onProgress: (percentage) => {
-            progress = new progressBar('下载进度', 50);
+            progress = new progressBar("下载进度", 50, totalSize);
             progress.render({ completed: percentage, total: 100 });
           },
           onBeforeSave: (deducedName) => {
-            const fileExt = extname(deducedName)
-            if (fileExt) return `${item.id}-${filenamify(item.desc)}${fileExt}`
-            return deducedName
+            const fileExt = extname(deducedName);
+            if (fileExt) return `${item.id}-${filenamify(item.desc)}${fileExt}`;
+            return deducedName;
           },
         });
 
         await downloadHelper.download();
-        downloadHelper = null
+        downloadHelper = null;
       } catch (error) {
         console.log("下载失败 ===>", item.id);
         continue;
