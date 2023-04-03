@@ -1,30 +1,32 @@
 import filenamify from "filenamify";
 import { ensureDir } from "fs-extra";
-import { extname, resolve } from "node:path";
+import { resolve } from "node:path";
 import download from "nodejs-file-downloader";
 import { downloadDir } from "../config/config.json";
 import { SpiderQueue } from "../type";
 import { getFileSize, transformDownloadUrl } from "../utils";
-import { headerOption } from "../utils/config";
+import { headerOption as headers } from "../utils/config";
 import progressBar from "../utils/progressBar";
 
 export const saveVideo = async (videoQueue: SpiderQueue[], dir: string) => {
   console.log("开始下载 ===>", dir);
-  const targetDir = resolve(process.cwd(), downloadDir, filenamify(dir));
+  const directory = resolve(process.cwd(), downloadDir, filenamify(dir));
   let _downloadCount = 0;
 
   try {
-    await ensureDir(targetDir);
+    await ensureDir(directory);
     for (const item of videoQueue) {
       let totalSize = "0"
       try {
         console.log(`正在下载 ===> ${++_downloadCount}项${_downloadCount === 1 ? "" : "\n"}`);
+        const fileName = `${item.id}-${filenamify(item.desc)}.mp4`;
         let progress = null;
         let downloadHelper = new download({
           url: transformDownloadUrl(item.url),
-          directory: targetDir,
+          directory,
+          fileName,
+          headers,
           skipExistingFileName: true,
-          headers: headerOption,
           onResponse: (response) => {
             totalSize = getFileSize(response.headers["content-length"]);
             return true;
@@ -33,11 +35,11 @@ export const saveVideo = async (videoQueue: SpiderQueue[], dir: string) => {
             progress = new progressBar("下载进度", 50, totalSize);
             progress.render({ completed: percentage, total: 100 });
           },
-          onBeforeSave: (deducedName) => {
-            const fileExt = extname(deducedName);
-            if (fileExt) return `${item.id}-${filenamify(item.desc)}${fileExt}`;
-            return deducedName;
-          },
+          // onBeforeSave: (deducedName) => {
+          //   const fileExt = extname(deducedName);
+          //   if (fileExt) return `${item.id}-${filenamify(item.desc)}${fileExt}`;
+          //   return deducedName;
+          // },
         });
 
         await downloadHelper.download();
