@@ -7,7 +7,7 @@ import { odin_tt, passport_csrf_token } from "../config/config.json";
  * @returns
  */
 export const getTiktokSecId = (userUrl: string) => {
-  const reg = /(?<=user\/).*(?=\?)/g;
+  const reg = /(?<=user\/)[^?]+/g;
   const result = userUrl.match(reg);
   if (result) return result[0];
   return null;

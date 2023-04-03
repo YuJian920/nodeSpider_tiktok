@@ -9,7 +9,7 @@
 在使用之前请先修改 config/config.json 配置文件
 
 ```js
-"user": ""                  // 用户链接，目前只支持短链
+"user": ""                  // 用户链接，支持长链和短链
 "type": "post" | "like"     // post-用户发布 | like-用户喜欢
 "limit": 0                  // 下载数限制 0 表示无限制 下载所有视频
 "odin_tt": ""               // cookies 中的 odin_tt，如果工作正常则不需要修改

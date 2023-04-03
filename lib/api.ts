@@ -26,11 +26,21 @@ const request = async (url: string, option = {}) => {
  * @param userUrl
  */
 export const getUserSecId = async (userUrl: string) => {
-  const response = await request(userUrl);
-  const userSecId = getTiktokSecId(response.url);
+  let userSecId = ""
+  const urlRegex = /www\.iesdouyin\.com\/share\/user\//
+
+  if (urlRegex.test(userUrl)) {
+    // 表示长链
+    userSecId = userUrl
+  } else {
+    // 表示短链
+    const response = await request(userUrl);
+    userSecId = response.url
+  }
+
+  userSecId = getTiktokSecId(userSecId);
 
   if (!userSecId) throw new Error("Sec_Id 获取失败");
-
   return userSecId;
 };
 
