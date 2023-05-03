@@ -2,7 +2,6 @@ import filenamify from "filenamify";
 import { ensureDir } from "fs-extra";
 import { resolve } from "node:path";
 import download from "nodejs-file-downloader";
-import { downloadDir } from "../config/config.json";
 import { SpiderQueue } from "../type";
 import { getFileSize, transformDownloadUrl } from "../utils";
 import { headerOption as headers } from "../utils/config";
@@ -11,11 +10,12 @@ import progressBar from "../utils/progressBar";
 /**
  * 下载视频队列
  * @param videoQueue 下载队列
- * @param dir 下载目录
+ * @param dir 视频名称
  */
 export const downloadVideoQueue = async (
   videoQueue: SpiderQueue[],
-  dir: string
+  dir: string,
+  downloadDir: string
 ) => {
   console.log("开始下载 ===>", dir);
   const directory = resolve(process.cwd(), downloadDir, filenamify(dir));

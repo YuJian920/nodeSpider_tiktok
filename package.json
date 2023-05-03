@@ -1,10 +1,11 @@
 {
   "name": "nodespider_tiktok",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "一个用 Node.js 写的抖音用户发布/喜欢列表爬虫",
   "main": "lib/index.ts",
   "scripts": {
-    "start": "tsx lib/index.ts"
+    "start": "tsx lib/index.ts",
+    "build": "tsx scripts/build.ts"
   },
   "keywords": [
     "tiktok",
@@ -25,9 +26,12 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.13",
+    "@types/minimist": "^1.2.2",
     "@types/node": "^18.11.3",
     "@types/qs": "^6.9.7",
     "@types/single-line-log": "^1.1.0",
+    "esbuild": "^0.17.18",
+    "minimist": "^1.2.8",
     "tsx": "^3.10.4",
     "typescript": "^4.8.4"
   }

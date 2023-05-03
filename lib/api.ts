@@ -2,7 +2,6 @@ import fetch from "node-fetch";
 import { TiktokUserLike } from "../type";
 import { getCookies, getTiktokSecId, transformParams } from "../utils";
 import { headerOption, likeBaseUrl, postBaseUrl } from "../utils/config";
-import { max_retry } from "../config/config.json";
 
 /**
  * 基础请求封装
@@ -22,16 +21,16 @@ const request = async (url: string, option = {}) => {
  * @param userUrl
  */
 export const getUserSecId = async (userUrl: string) => {
-  let userSecId = ""
-  const urlRegex = /www\.iesdouyin\.com\/share\/user\//
+  let userSecId = "";
+  const urlRegex = /www\.iesdouyin\.com\/share\/user\//;
 
   if (urlRegex.test(userUrl)) {
     // 表示长链
-    userSecId = userUrl
+    userSecId = userUrl;
   } else {
     // 表示短链
     const response = await request(userUrl);
-    userSecId = response.url
+    userSecId = response.url;
   }
 
   userSecId = getTiktokSecId(userSecId);
@@ -76,9 +75,15 @@ const getUserVideo = (type: string) => {
   if (type === "post") requestUrl = postBaseUrl;
   if (type === "like") requestUrl = likeBaseUrl;
 
-  return async (sec_uid: string, max_cursor: number) => {
+  return async (
+    sec_uid: string,
+    max_cursor: number,
+    max_retry: number,
+    odin_tt: string,
+    passport_csrf_token: string
+  ) => {
     let requestParams = transformParams(sec_uid, max_cursor);
-    let cookies = await getCookies(getTTWid);
+    let cookies = await getCookies(getTTWid, odin_tt, passport_csrf_token);
     let loopCount = 0;
     let responseText = "";
 
@@ -93,8 +98,6 @@ const getUserVideo = (type: string) => {
       // 每尝试 10 次等待 2s
       if (loopCount % 10 === 0 && !responseText) {
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        requestParams = transformParams(sec_uid, max_cursor);
-        cookies = await getCookies(getTTWid);
       }
     }
 

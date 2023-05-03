@@ -22,3 +22,13 @@ export interface SpiderQueue {
   desc: string;
   url: string;
 }
+
+export interface BinArgvType {
+  u?: string;
+  t?: "like" | "post";
+  l?: number;
+  r?: number;
+  odin_tt?: string;
+  passport_csrf_token?: string;
+  dir?: string;
+}

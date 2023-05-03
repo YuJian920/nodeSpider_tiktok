@@ -1,5 +1,4 @@
 import { getXB } from "./X-Bogus";
-import { odin_tt, passport_csrf_token } from "../config/config.json";
 import { HDDownloadUrl } from "./config";
 import { stringify } from "qs";
 
@@ -36,7 +35,11 @@ export const generateRandomString = (length = 107) => {
  * @param getTtwidFn
  * @returns
  */
-export const getCookies = async (getTtwidFn) => {
+export const getCookies = async (
+  getTtwidFn,
+  odin_tt: string,
+  passport_csrf_token: string
+) => {
   const ttwid = await getTtwidFn();
   const cookies = [
     `msToken=${generateRandomString()}`,
@@ -71,16 +74,15 @@ export const transformParams = (sec_user_id: string, max_cursor: number) => {
 
 /**
  * 获取 1080P 下载地址
- * @param video_id 
- * @returns 
+ * @param video_id
+ * @returns
  */
 export const transformDownloadUrl = (video_id: string) => {
-  return `${HDDownloadUrl}${stringify({ video_id, radio: "1080p", line: 0 })}`
-}
-
+  return `${HDDownloadUrl}${stringify({ video_id, radio: "1080p", line: 0 })}`;
+};
 
 export const getFileSize = (contentLengthHeader: string) => {
   const contentLength = parseInt(contentLengthHeader, 10);
   const fileSize = contentLength / (1024 * 1024);
   return fileSize.toFixed(2);
-}
+};

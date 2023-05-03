@@ -14,6 +14,7 @@
 "limit": 0                  // 下载数限制 0 表示无限制 下载所有视频
 "odin_tt": ""               // cookies 中的 odin_tt，如果工作正常则不需要修改
 "passport_csrf_token": ""   // cookies 中的 passport_csrf_token，如果工作正常则不需要修改
+"downloadDir": ""           // 下载目录
 "max_retry": 50             // 获取内容的最大重试次数
 ```
 
