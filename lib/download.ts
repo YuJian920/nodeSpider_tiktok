@@ -37,6 +37,7 @@ export const downloadVideoQueue = async (
         directory,
         fileName,
         headers,
+        maxAttempts: 3,
         skipExistingFileName: true,
         onResponse: (response) => {
           totalSize = getFileSize(response.headers["content-length"]);
@@ -46,11 +47,6 @@ export const downloadVideoQueue = async (
           progress = new progressBar("下载进度", 50, totalSize);
           progress.render({ completed: percentage, total: 100 });
         },
-        // onBeforeSave: (deducedName) => {
-        //   const fileExt = extname(deducedName);
-        //   if (fileExt) return `${item.id}-${filenamify(item.desc)}${fileExt}`;
-        //   return deducedName;
-        // },
       });
 
       await downloadHelper.download();
