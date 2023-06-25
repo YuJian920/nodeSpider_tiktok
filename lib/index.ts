@@ -60,6 +60,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
         id: item.aweme_id,
         desc: item.desc,
         url: item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ?? item.video?.play_addr?.url_list?.[0],
+        info: item,
       };
       spiderQueue.push(videoInfo);
     }

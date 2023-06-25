@@ -21,4 +21,5 @@ export interface SpiderQueue {
   id: string;
   desc: string;
   url: string;
+  info: any;
 }

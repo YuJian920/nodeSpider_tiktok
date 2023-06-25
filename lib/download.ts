@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import download from "nodejs-file-downloader";
 import { downloadDir } from "../config/config.json";
 import { SpiderQueue } from "../type";
-import { getFileSize } from "../utils";
+import { getDateTimeString, logError, errQueueToJson, getFileSize } from "../utils";
 import { headerOption as headers } from "../utils/config";
 import progressBar from "../utils/progressBar";
 
@@ -45,7 +45,10 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
       await downloadHelper.download();
       downloadHelper = null;
     } catch (error) {
-      console.log("下载失败 ===>", item.id);
+      const errLogPath = resolve(process.cwd(), downloadDir, "logs");
+      await logError(error, resolve(errLogPath, `${getDateTimeString()}.log`));
+      await errQueueToJson(JSON.stringify(item.info), resolve(errLogPath, `errorQueue.json`));
+      console.log("下载失败 ===>", item.id, "日志已保存");
       continue;
     }
   }

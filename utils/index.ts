@@ -1,7 +1,9 @@
-import { getXB } from "./X-Bogus";
-import { odin_tt, passport_csrf_token } from "../config/config.json";
-import { HDDownloadUrl } from "./config";
+import fs from "fs-extra";
+import path from "path";
 import { stringify } from "qs";
+import { odin_tt, passport_csrf_token } from "../config/config.json";
+import { getXB } from "./X-Bogus";
+import { HDDownloadUrl } from "./config";
 
 /**
  * 从 URL 中拆出 Sec_id
@@ -77,8 +79,62 @@ export const transformDownloadUrl = (video_id: string) => {
   return `${HDDownloadUrl}${stringify({ video_id, radio: "1080p", line: 0 })}`;
 };
 
+/**
+ * 获取文件大小
+ * @param contentLengthHeader Content-Length
+ * @returns
+ */
 export const getFileSize = (contentLengthHeader: string) => {
   const contentLength = parseInt(contentLengthHeader, 10);
   const fileSize = contentLength / (1024 * 1024);
   return fileSize.toFixed(2);
+};
+
+/**
+ * 记录错误日志
+ * @param error 错误对象
+ * @param logPath 日志文件路径
+ */
+export const logError = async (error: Error, logPath: string): Promise<void> => {
+  const logDir = path.dirname(logPath);
+  await fs.ensureDir(logDir); // 确保日志目录存在
+  const logTime = new Date().toISOString();
+  const logContent = `${logTime}: ${error.stack}\n`;
+  await fs.appendFile(logPath, logContent); // 追加日志内容到日志文件
+};
+
+/**
+ * 将错误信息写入 JSON 文件
+ * @param data 错误 JSON
+ * @param filePath JSON 文件路径
+ */
+export const errQueueToJson = async (data: string, filePath: string): Promise<void> => {
+  const dirPath = path.dirname(filePath);
+  await fs.ensureDir(dirPath);
+
+  let json = [];
+  try {
+    json = await fs.readJSON(filePath);
+  } catch (error) {
+    json = [];
+  }
+
+  const newData = JSON.parse(data);
+  if (Array.isArray(json)) json.push(newData);
+  else Object.assign(json, newData);
+  await fs.writeJSON(filePath, json, { spaces: 2 });
+};
+
+/**
+ * 获取当前时间字符串
+ * @returns {string} YYYY-MM-DD_HH-mm
+ */
+export const getDateTimeString = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0");
+  const day = now.getDate().toString().padStart(2, "0");
+  const hour = now.getHours().toString().padStart(2, "0");
+  const minute = now.getMinutes().toString().padStart(2, "0");
+  return `${year}-${month}-${day}T${hour}${minute}`;
 };
