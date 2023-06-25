@@ -69,7 +69,7 @@ export const loadQueue = async (
       const videoInfo = {
         id: item.aweme_id,
         desc: item.desc,
-        url: item.video.play_addr.uri,
+        url: item.video?.bit_rate?.[0]?.play_addr.url_list?.[0] || item.video?.play_addr?.url_list?.[0],
       };
       spiderQueue.push(videoInfo);
     }

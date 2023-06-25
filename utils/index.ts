@@ -62,10 +62,10 @@ export const transformParams = (sec_user_id: string, max_cursor: number) => {
     sec_user_id,
     count: 35,
     max_cursor,
-    aid: 1128,
-    version_name: "23.5.0",
-    device_platform: "android",
-    os_version: "2333",
+    aid: 6383,
+    cookie_enabled: true,
+    platform: "PC",
+    downlink: 10,
   };
   params["X-Bogus"] = getXB(stringify(params));
 
