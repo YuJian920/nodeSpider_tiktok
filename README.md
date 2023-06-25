@@ -26,6 +26,7 @@ pnpm install
 // 启动爬虫
 pnpm run start
 ```
+如果获取列表频繁出现失败，请修改 config.js 下的 odin_tt 和 passport_csrf_token 字段
 
 现阶段还没有实现自动用用户名字命名下载文件夹，如果你需要下载多个用户的喜欢列表并存在分类的需求，可能需要给已存在的文件夹手动重命名
 

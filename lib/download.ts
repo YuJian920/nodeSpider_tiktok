@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import download from "nodejs-file-downloader";
 import { downloadDir } from "../config/config.json";
 import { SpiderQueue } from "../type";
-import { getFileSize, transformDownloadUrl } from "../utils";
+import { getFileSize } from "../utils";
 import { headerOption as headers } from "../utils/config";
 import progressBar from "../utils/progressBar";
 
@@ -33,10 +33,11 @@ export const downloadVideoQueue = async (
       const fileName = `${item.id}-${filenamify(item.desc)}.mp4`;
       let progress = null;
       let downloadHelper = new download({
-        url: transformDownloadUrl(item.url),
+        url: item.url,
         directory,
         fileName,
         headers,
+        maxAttempts: 3,
         skipExistingFileName: true,
         onResponse: (response) => {
           totalSize = getFileSize(response.headers["content-length"]);
