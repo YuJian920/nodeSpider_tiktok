@@ -22,16 +22,16 @@ const request = async (url: string, option = {}) => {
  * @param userUrl
  */
 export const getUserSecId = async (userUrl: string) => {
-  let userSecId = ""
-  const urlRegex = /www\.iesdouyin\.com\/share\/user\//
+  let userSecId = "";
+  const urlRegex = /www\.iesdouyin\.com\/share\/user\//;
 
   if (urlRegex.test(userUrl)) {
     // 表示长链
-    userSecId = userUrl
+    userSecId = userUrl;
   } else {
     // 表示短链
     const response = await request(userUrl);
-    userSecId = response.url
+    userSecId = response.url;
   }
 
   userSecId = getTiktokSecId(userSecId);
@@ -54,13 +54,10 @@ const getTTWid = async () => {
     cbUrlProtocol: "https",
     union: true,
   };
-  const result = await request(
-    "https://ttwid.bytedance.com/ttwid/union/register/",
-    {
-      method: "POST",
-      body: JSON.stringify(postBody),
-    }
-  );
+  const result = await request("https://ttwid.bytedance.com/ttwid/union/register/", {
+    method: "POST",
+    body: JSON.stringify(postBody),
+  });
   const ttwid = result.headers.get("set-cookie");
 
   return ttwid.split(";").map((item) => item.trim())[0];
@@ -83,7 +80,7 @@ const getUserVideo = (type: string) => {
     let responseText = "";
 
     while (loopCount <= max_retry && responseText === "") {
-      if (loopCount > 0) console.log(`第${loopCount}次请求...`);
+      if (loopCount > 0) console.log(`第 ${loopCount}/${max_retry} 次重复请求...`);
       loopCount += 1;
       const responsePending = await request(requestUrl + requestParams, {
         headers: { ...headerOption, cookie: cookies },

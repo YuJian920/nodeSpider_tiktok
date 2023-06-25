@@ -28,14 +28,13 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   // 循环分页
   while (_has_more) {
     console.log("获取内容 ===>", ++_pageCount, "页");
-    const { list, max_cursor, has_more } = await getUserVideo(
-      userSecId,
-      _max_cursor
-    );
+    const { list, max_cursor, has_more } = await getUserVideo(userSecId, _max_cursor);
 
+    // 错误重试
     if (!list || list.length === 0) {
       if (_max_retry <= 3) {
         _max_retry++;
+        _pageCount--;
         console.log("获取内容重试 ===> 重试次数", _max_retry);
         continue;
       }
@@ -60,7 +59,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
       const videoInfo = {
         id: item.aweme_id,
         desc: item.desc,
-        url: item.video?.bit_rate?.[0]?.play_addr.url_list?.[0] || item.video?.play_addr?.url_list?.[0],
+        url: item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ?? item.video?.play_addr?.url_list?.[0],
       };
       spiderQueue.push(videoInfo);
     }

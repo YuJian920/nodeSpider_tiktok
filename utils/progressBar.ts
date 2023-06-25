@@ -1,33 +1,33 @@
-import { stdout } from "single-line-log"
+import { stdout } from "single-line-log";
 
 class ProgressBar {
-  description: string
-  length: number
-  totalSize: string
+  description: string;
+  length: number;
+  totalSize: string;
 
   constructor(description: string, length: number, totalSize: string) {
-    this.description = description || 'Progress'
-    this.length = length || 25
-    this.totalSize = totalSize
+    this.description = description || "Progress";
+    this.length = length || 25;
+    this.totalSize = totalSize;
   }
 
-  render(opts: { completed: number, total: number }) {
-    const percent = (opts.completed / opts.total)
-    const cell_num = Math.floor(percent * this.length)
+  render(opts: { completed: number; total: number }) {
+    const percent = opts.completed / opts.total;
+    const cell_num = Math.floor(percent * this.length);
 
-    let cell = ''
+    let cell = "";
     for (let i = 0; i < cell_num; i++) {
-      cell += '█'
+      cell += "█";
     }
 
-    let empty = ''
+    let empty = "";
     for (let i = 0; i < this.length - cell_num; i++) {
-      empty += '░'
+      empty += "░";
     }
 
-    const cmdText = `${this.description}: ${cell}${empty} ${(100 * percent).toFixed(2)}% | Size:${this.totalSize}MB\n`
-    stdout(cmdText)
+    const cmdText = `${this.description}: ${cell}${empty} ${(100 * percent).toFixed(2)}% | Size:${this.totalSize}MB\n`;
+    stdout(cmdText);
   }
 }
 
-export default ProgressBar
+export default ProgressBar;

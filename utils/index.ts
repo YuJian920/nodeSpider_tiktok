@@ -22,8 +22,7 @@ export const getTiktokSecId = (userUrl: string) => {
  */
 export const generateRandomString = (length = 107) => {
   let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -71,16 +70,15 @@ export const transformParams = (sec_user_id: string, max_cursor: number) => {
 
 /**
  * 获取 1080P 下载地址
- * @param video_id 
- * @returns 
+ * @param video_id
+ * @returns
  */
 export const transformDownloadUrl = (video_id: string) => {
-  return `${HDDownloadUrl}${stringify({ video_id, radio: "1080p", line: 0 })}`
-}
-
+  return `${HDDownloadUrl}${stringify({ video_id, radio: "1080p", line: 0 })}`;
+};
 
 export const getFileSize = (contentLengthHeader: string) => {
   const contentLength = parseInt(contentLengthHeader, 10);
   const fileSize = contentLength / (1024 * 1024);
   return fileSize.toFixed(2);
-}
+};
