@@ -1,6 +1,6 @@
 {
   "name": "nodespider_tiktok",
-  "version": "2.1.0",
+  "version": "2.5.0",
   "description": "一个用 Node.js 写的抖音用户发布/喜欢列表爬虫",
   "main": "lib/index.ts",
   "scripts": {

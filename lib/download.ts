@@ -14,14 +14,12 @@ import progressBar from "../utils/progressBar";
  * @param dir 下载目录
  */
 export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string) => {
-  console.log("开始下载 ===>", dir);
   let _downloadCount = 0;
   let hasErr = false;
 
   for (const item of videoQueue) {
     try {
-      console.log(`正在下载 ===> ${++_downloadCount}项${_downloadCount === 1 ? "" : "\n"}`);
-      await downloadVideoSingle(item, dir);
+      await downloadVideoSingle(item, dir, ++_downloadCount);
     } catch (error) {
       hasErr = true;
       const errLogPath = resolve(process.cwd(), downloadDir, "logs");
@@ -41,8 +39,8 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
  * @param item 下载项
  * @param dir 下载目录
  */
-export const downloadVideoSingle = async (item: SpiderQueue, dir: string) => {
-  console.log("开始下载 ===>", dir);
+export const downloadVideoSingle = async (item: SpiderQueue, dir: string, index?: number) => {
+  console.log(`开始下载 ===> ${item.id}`);
   const directory = resolve(process.cwd(), downloadDir, filenamify(dir));
   const fileName = `${item.id}-${filenamify(item.desc)}.mp4`;
   await ensureDir(directory).catch((error) => console.log("downloadVideoQueue: 下载目录创建失败"));
@@ -62,11 +60,12 @@ export const downloadVideoSingle = async (item: SpiderQueue, dir: string) => {
       return true;
     },
     onProgress: (percentage) => {
-      progress = new progressBar("下载进度", 50, totalSize);
+      progress = new progressBar(`${index ? `${index}: ` : ""}${item.id} 下载进度`, 50, totalSize);
       progress.render({ completed: percentage, total: 100 });
     },
   });
 
   await downloadHelper.download();
   downloadHelper = null;
+  progress = null;
 };

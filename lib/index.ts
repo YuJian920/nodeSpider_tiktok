@@ -19,7 +19,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   let _has_more = true;
   let _max_cursor = 0;
   let _pageCount = 0;
-  let _max_retry = 0;
+  let _max_retry = 1;
 
   let getUserVideo: any = () => ({});
   if (type === "like") getUserVideo = getUserLikeVideo;
@@ -27,33 +27,32 @@ const loadQueue = async (user: string, type: string, limit: number) => {
 
   // 循环分页
   while (_has_more) {
+    // 限制检查， 超出限制中断循环删除多余项
+    if (limit !== 0 && limit <= spiderQueue.length) {
+      spiderQueue = spiderQueue.slice(0, limit);
+      break;
+    }
+
     console.log("获取内容 ===>", ++_pageCount, "页");
     const { list, max_cursor, has_more } = await getUserVideo(userSecId, _max_cursor);
 
     // 错误重试
     if (!list || list.length === 0) {
-      if (_max_retry <= 3) {
+      if (_max_retry <= 5) {
+        console.log("获取内容重试 ===> 重试次数", `${_max_retry} / 5`);
         _max_retry++;
         _pageCount--;
-        console.log("获取内容重试 ===> 重试次数", _max_retry);
         continue;
       }
 
-      _has_more = false;
       console.log("获取内容结束 ===> 列表为空");
       break;
     }
 
     // 外部变量控制循环
+    _max_retry = 1;
     _has_more = has_more;
     _max_cursor = max_cursor;
-
-    // 限制检查， 超出限制中断循环删除多余项
-    if (limit !== 0 && limit <= spiderQueue.length) {
-      _has_more = false;
-      spiderQueue = spiderQueue.slice(0, limit);
-      break;
-    }
 
     for (let item of list) {
       const videoInfo = {

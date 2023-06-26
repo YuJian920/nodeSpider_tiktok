@@ -5,7 +5,7 @@ import { autoRetryDownload, downloadDir, max_retry } from "../config/config.json
 import { downloadVideoSingle } from "../lib/download";
 import { TiktokUserLike } from "../type";
 import { deleteErrQueue, getCookies, getTiktokSecId, transformDownloadUrl, transformParams } from "../utils";
-import { headerOption, likeBaseUrl, postBaseUrl } from "../utils/config";
+import { TTWideUrl, headerOption, likeBaseUrl, postBaseUrl } from "../utils/config";
 
 /**
  * 基础请求封装
@@ -54,10 +54,7 @@ const getTTWid = async () => {
     cbUrlProtocol: "https",
     union: true,
   };
-  const result = await request("https://ttwid.bytedance.com/ttwid/union/register/", {
-    method: "POST",
-    body: JSON.stringify(postBody),
-  });
+  const result = await request(TTWideUrl, { method: "POST", body: JSON.stringify(postBody) });
   const ttwid = result.headers.get("set-cookie");
 
   return ttwid.split(";").map((item) => item.trim())[0];
@@ -77,34 +74,36 @@ const getUserVideo = (type: string) => {
     let requestParams = transformParams(sec_uid, max_cursor);
     let cookies = await getCookies(getTTWid);
     let loopCount = 0;
-    let responseText = "";
+    let responseJSON: TiktokUserLike | null = null;
 
-    while (loopCount <= max_retry && !responseText) {
+    while (loopCount <= max_retry && !responseJSON) {
       if (loopCount > 0) console.log(`第 ${loopCount}/${max_retry} 次重复请求...`);
       loopCount += 1;
       const responsePending = await request(requestUrl + requestParams, {
         headers: { ...headerOption, cookie: cookies },
       });
-      responseText = await responsePending.text();
 
-      // 每尝试 10 次等待 2s
-      if (loopCount % 10 === 0 && !responseText) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        requestParams = transformParams(sec_uid, max_cursor);
-        cookies = await getCookies(getTTWid);
+      try {
+        responseJSON = (await responsePending.json()) as TiktokUserLike;
+      } catch (error) {
+        // 每尝试 10 次等待 2s
+        if (loopCount % 10 === 0 && !responseJSON) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          requestParams = transformParams(sec_uid, max_cursor);
+          cookies = await getCookies(getTTWid);
+        }
       }
     }
 
-    if (!responseText) {
+    if (!responseJSON) {
       console.log("超出最大请求次数，停止请求，下载已获取内容...");
       return { list: [], max_cursor: 0, has_more: false };
     }
-    const response = JSON.parse(responseText) as TiktokUserLike;
 
     return {
-      list: response.aweme_list,
-      max_cursor: response.max_cursor,
-      has_more: response.has_more,
+      list: responseJSON.aweme_list,
+      max_cursor: responseJSON.max_cursor,
+      has_more: responseJSON.has_more,
     };
   };
 };
