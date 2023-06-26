@@ -4,7 +4,7 @@ import { resolve } from "path";
 import { autoRetryDownload, downloadDir, max_retry } from "../config/config.json";
 import { downloadVideoSingle } from "../lib/download";
 import { TiktokUserLike } from "../type";
-import { deleteErrQueue, getCookies, getTiktokSecId, transformParams } from "../utils";
+import { deleteErrQueue, getCookies, getTiktokSecId, transformDownloadUrl, transformParams } from "../utils";
 import { headerOption, likeBaseUrl, postBaseUrl } from "../utils/config";
 
 /**
@@ -124,8 +124,8 @@ export const reptyErrorQueue = async (repty: boolean, downloadType: string) => {
 
     const errorQueue = await readJSON(queueJSONPath);
     for await (const queue of errorQueue) {
-      const { play_addr: { url_list = [] } = {}, bit_rate = [{}] } = queue.video || {};
-      const downlinkList = [...(bit_rate[0]?.play_addr?.url_list || []), ...url_list];
+      const { play_addr: { url_list = [], uri = "" } = {}, bit_rate = [{}] } = queue.video || {};
+      const downlinkList = [...(bit_rate[0]?.play_addr?.url_list || []), ...url_list, transformDownloadUrl(uri)];
 
       for (let index = 0; index < downlinkList.length; index++) {
         console.log(`正在尝试 ${queue.aweme_id} ===> 第${index + 1}次`);
