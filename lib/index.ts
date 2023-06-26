@@ -1,6 +1,6 @@
 import { limit, type, user } from "../config/config.json";
 import { SpiderQueue } from "../type";
-import { getUserLikeVideo, getUserPostVideo, getUserSecId } from "./api";
+import { getUserLikeVideo, getUserPostVideo, getUserSecId, reptyErrorQueue } from "./api";
 import { downloadVideoQueue } from "./download";
 
 /**
@@ -72,5 +72,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
 
 (async () => {
   const { spiderQueue } = await loadQueue(user, type, limit);
-  await downloadVideoQueue(spiderQueue, type);
+  const hasErr = await downloadVideoQueue(spiderQueue, type);
+
+  await reptyErrorQueue(hasErr, type);
 })();

@@ -1,8 +1,11 @@
+import { readJSON } from "fs-extra";
 import fetch from "node-fetch";
+import { resolve } from "path";
+import { autoRetryDownload, downloadDir, max_retry } from "../config/config.json";
+import { downloadVideoSingle } from "../lib/download";
 import { TiktokUserLike } from "../type";
-import { getCookies, getTiktokSecId, transformParams } from "../utils";
+import { deleteErrQueue, getCookies, getTiktokSecId, transformParams } from "../utils";
 import { headerOption, likeBaseUrl, postBaseUrl } from "../utils/config";
-import { max_retry } from "../config/config.json";
 
 /**
  * 基础请求封装
@@ -11,10 +14,7 @@ import { max_retry } from "../config/config.json";
  * @returns
  */
 const request = async (url: string, option = {}) => {
-  return await fetch(url, {
-    headers: headerOption,
-    ...option,
-  });
+  return await fetch(url, { headers: headerOption, ...option });
 };
 
 /**
@@ -79,7 +79,7 @@ const getUserVideo = (type: string) => {
     let loopCount = 0;
     let responseText = "";
 
-    while (loopCount <= max_retry && responseText === "") {
+    while (loopCount <= max_retry && !responseText) {
       if (loopCount > 0) console.log(`第 ${loopCount}/${max_retry} 次重复请求...`);
       loopCount += 1;
       const responsePending = await request(requestUrl + requestParams, {
@@ -111,3 +111,39 @@ const getUserVideo = (type: string) => {
 
 export const getUserLikeVideo = getUserVideo("like");
 export const getUserPostVideo = getUserVideo("post");
+
+/**
+ * 重试失败任务队列
+ * @param repty 是否重试
+ * @param downloadType 下载类型
+ */
+export const reptyErrorQueue = async (repty: boolean, downloadType: string) => {
+  if (repty && autoRetryDownload) {
+    console.log(`开始处理 ===> 失败任务队列`);
+    const queueJSONPath = resolve(process.cwd(), downloadDir, "logs", "errorQueue.json");
+
+    const errorQueue = await readJSON(queueJSONPath);
+    for await (const queue of errorQueue) {
+      const { play_addr: { url_list = [] } = {}, bit_rate = [{}] } = queue.video || {};
+      const downlinkList = [...(bit_rate[0]?.play_addr?.url_list || []), ...url_list];
+
+      for (let index = 0; index < downlinkList.length; index++) {
+        console.log(`正在尝试 ${queue.aweme_id} ===> 第${index + 1}次`);
+        const downItem = { id: queue.aweme_id, desc: queue.desc, url: downlinkList[index], info: {} };
+
+        try {
+          await downloadVideoSingle(downItem, downloadType);
+          console.log(`尝试 ${queue.aweme_id} ===> 第${index + 1}次成功`);
+          break;
+        } catch (error) {
+          if (index === downlinkList.length - 1) {
+            console.log(`尝试 ${queue.aweme_id} ===> 第${index + 1}次失败，已达最大尝试次数，放弃下载`);
+          } else console.log(`尝试 ${queue.aweme_id} ===> 第${index + 1}次失败`);
+          continue;
+        }
+      }
+    }
+
+    await deleteErrQueue(queueJSONPath);
+  }
+};

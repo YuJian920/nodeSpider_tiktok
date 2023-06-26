@@ -99,7 +99,7 @@ export const logError = async (error: Error, logPath: string): Promise<void> => 
   const logDir = path.dirname(logPath);
   await fs.ensureDir(logDir); // 确保日志目录存在
   const logTime = new Date().toISOString();
-  const logContent = `${logTime}: ${error.stack}\n`;
+  const logContent = `\n${logTime}: ${error.stack}\n`;
   await fs.appendFile(logPath, logContent); // 追加日志内容到日志文件
 };
 
@@ -123,6 +123,20 @@ export const errQueueToJson = async (data: string, filePath: string): Promise<vo
   if (Array.isArray(json)) json.push(newData);
   else Object.assign(json, newData);
   await fs.writeJSON(filePath, json, { spaces: 2 });
+};
+
+/**
+ * 删除 errQueueToJson 函数创建的 JSON 文件
+ * @param filePath
+ */
+export const deleteErrQueue = async (filePath: string): Promise<void> => {
+  console.log("删除 errorQueue.json...");
+  try {
+    await fs.remove(filePath);
+    console.log("删除 errorQueue.json 成功");
+  } catch (error) {
+    console.log("删除 errorQueue.json 失败, 请手动删除");
+  }
 };
 
 /**
