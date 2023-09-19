@@ -40,7 +40,7 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
  * @param dir 下载目录
  */
 export const downloadVideoSingle = async (item: SpiderQueue, dir: string, index?: number) => {
-  console.log(`开始下载 ===> ${item.id}`);
+  console.log(`开始下载 ===> ${item.id}\n`);
   const directory = resolve(process.cwd(), downloadDir, filenamify(dir));
   const fileName = `${item.id}-${filenamify(item.desc)}.mp4`;
   await ensureDir(directory).catch((error) => console.log("downloadVideoQueue: 下载目录创建失败"));

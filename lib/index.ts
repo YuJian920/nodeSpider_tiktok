@@ -1,4 +1,4 @@
-import { limit, type, user } from "../config/config.json";
+import config from "../config/config.json";
 import { SpiderQueue } from "../type";
 import { getUserLikeVideo, getUserPostVideo, getUserSecId, reptyErrorQueue } from "./api";
 import { downloadVideoQueue } from "./download";
@@ -70,8 +70,13 @@ const loadQueue = async (user: string, type: string, limit: number) => {
 };
 
 (async () => {
-  const { spiderQueue } = await loadQueue(user, type, limit);
-  const hasErr = await downloadVideoQueue(spiderQueue, type);
+  let index = 0;
+  for (const { user, type, limit } of config.userList) {
+    console.log(`开始处理第 ${index + 1} 个用户下载`);
+    const { spiderQueue } = await loadQueue(user, type, limit);
+    const hasErr = await downloadVideoQueue(spiderQueue, `${type}_user${index}`);
 
-  await reptyErrorQueue(hasErr, type);
+    await reptyErrorQueue(hasErr, type);
+    index++;
+  }
 })();
