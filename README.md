@@ -15,13 +15,19 @@
 在使用之前请先修改 config/config.json 配置文件
 
 ```js
-"user": ""                  // 用户链接，支持长链和短链
-"type": "post" | "like"     // post-用户发布 | like-用户喜欢
-"limit": 0                  // 下载数限制 0 表示无限制 下载所有视频
-"odin_tt": ""               // cookies 中的 odin_tt，如果工作正常则不需要修改
-"passport_csrf_token": ""   // cookies 中的 passport_csrf_token，如果工作正常则不需要修改
-"max_retry": 50             // 获取内容的最大重试次数
-"autoRetryDownload": true   // 是否自动重试下载失败的文件
+"userList": [                   // 可以下载多个用户的列表
+  {
+    "user": ""                  // 用户链接，支持长链和短链
+    "type": "post" | "like"     // post-用户发布 | like-用户喜欢
+    "limit": 0                  // 下载数限制 0 表示无限制 下载所有视频
+    "username": ""              // 下载的文件夹名字，如果不填则默认为下标
+  }
+]
+"odin_tt": ""                   // cookies 中的 odin_tt，如果工作正常则不需要修改
+"passport_csrf_token": ""       // cookies 中的 passport_csrf_token，如果工作正常则不需要修改
+"max_retry": 50                 // 获取内容的最大重试次数
+"autoRetryDownload": true       // 是否自动重试下载失败的文件
+"downloadDir": "download/",     // 下载目录
 ```
 
 用户喜欢列表和发布作品只能下载公开状态的列表

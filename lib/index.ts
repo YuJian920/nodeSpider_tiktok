@@ -1,6 +1,11 @@
 import config from "../config/config.json";
 import { SpiderQueue } from "../type";
-import { getUserLikeVideo, getUserPostVideo, getUserSecId, reptyErrorQueue } from "./api";
+import {
+  getUserLikeVideo,
+  getUserPostVideo,
+  getUserSecId,
+  reptyErrorQueue,
+} from "./api";
 import { downloadVideoQueue } from "./download";
 
 /**
@@ -34,7 +39,10 @@ const loadQueue = async (user: string, type: string, limit: number) => {
     }
 
     console.log("获取内容 ===>", ++_pageCount, "页");
-    const { list, max_cursor, has_more } = await getUserVideo(userSecId, _max_cursor);
+    const { list, max_cursor, has_more } = await getUserVideo(
+      userSecId,
+      _max_cursor
+    );
 
     // 错误重试
     if (!list || list.length === 0) {
@@ -71,12 +79,13 @@ const loadQueue = async (user: string, type: string, limit: number) => {
 
 (async () => {
   let index = 0;
-  for (const { user, type, limit } of config.userList) {
+  for (const { user, type, limit, username } of config.userList) {
     console.log(`开始处理第 ${index + 1} 个用户下载`);
+    const downloadDir = username || `${type}_user${index}`;
     const { spiderQueue } = await loadQueue(user, type, limit);
-    const hasErr = await downloadVideoQueue(spiderQueue, `${type}_user${index}`);
+    const hasErr = await downloadVideoQueue(spiderQueue, downloadDir);
 
-    await reptyErrorQueue(hasErr, type);
+    await reptyErrorQueue(hasErr, downloadDir);
     index++;
   }
 })();

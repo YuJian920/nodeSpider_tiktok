@@ -72,7 +72,7 @@ const getUserVideo = (type: string) => {
 
   return async (sec_uid: string, max_cursor: number) => {
     let requestParams = transformParams(sec_uid, max_cursor);
-    let cookies = await getCookies(getTTWid);
+    let cookie = await getCookies(getTTWid);
     let loopCount = 0;
     let responseJSON: TiktokUserLike | null = null;
 
@@ -80,7 +80,7 @@ const getUserVideo = (type: string) => {
       if (loopCount > 0) console.log(`第 ${loopCount}/${max_retry} 次重复请求...`);
       loopCount += 1;
       const responsePending = await request(requestUrl + requestParams, {
-        headers: { ...headerOption, cookie: cookies },
+        headers: { ...headerOption, cookie },
       });
 
       try {
@@ -90,7 +90,7 @@ const getUserVideo = (type: string) => {
         if (loopCount % 10 === 0 && !responseJSON) {
           await new Promise((resolve) => setTimeout(resolve, 2000));
           requestParams = transformParams(sec_uid, max_cursor);
-          cookies = await getCookies(getTTWid);
+          cookie = await getCookies(getTTWid);
         }
       }
     }
