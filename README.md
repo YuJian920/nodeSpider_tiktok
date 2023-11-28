@@ -34,7 +34,7 @@
 
 ```
 // clone repo to your directory
-git clone https://github.com/YuJian920/nodeSpider_tiktok/tree/main
+git clone https://github.com/YuJian920/nodeSpider_tiktok.git
 
 //go into the folder
 cd nodeSpider_tiktok
