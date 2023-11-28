@@ -33,6 +33,12 @@
 用户喜欢列表和发布作品只能下载公开状态的列表
 
 ```
+// clone repo to your directory
+git clone https://github.com/YuJian920/nodeSpider_tiktok/tree/main
+
+//go into the folder
+cd nodeSpider_tiktok
+
 // 安装依赖
 pnpm install
 
