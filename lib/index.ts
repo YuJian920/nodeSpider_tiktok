@@ -31,18 +31,12 @@ const loadQueue = async (user: string, type: string, limit: number) => {
     }
 
     console.log("获取内容 ===>", ++_pageCount, "页");
-    const { list, max_cursor, has_more } = await getUserVideo(type)(
-      userSecId,
-      _max_cursor
-    );
+    const { list, max_cursor, has_more } = await getUserVideo(type)(userSecId, _max_cursor);
 
     // 错误重试
     if (!list || list.length === 0) {
       if (_max_retry <= list_max_retry_limit) {
-        console.log(
-          "获取内容重试 ===> 重试次数",
-          `${_max_retry} / ${list_max_retry_limit}`
-        );
+        console.log("获取内容重试 ===> 重试次数", `${_max_retry} / ${list_max_retry_limit}`);
         _max_retry++;
         _pageCount--;
         continue;
@@ -58,15 +52,25 @@ const loadQueue = async (user: string, type: string, limit: number) => {
     _max_cursor = max_cursor;
 
     for (let item of list) {
-      const videoInfo = {
-        id: item.aweme_id,
-        desc: item.desc,
-        url:
-          item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ??
-          item.video?.play_addr?.url_list?.[0],
-        info: item,
-      };
-      spiderQueue.push(videoInfo);
+      // 图片类型
+      if (item.aweme_type === 68) {
+        const imageInfo = {
+          id: item.aweme_id,
+          desc: item.desc,
+          url: item.images.map((item) => item.url_list[0]) ?? item.images.map((item) => item.download_url_list[0]),
+          info: item,
+        };
+        spiderQueue.push(imageInfo);
+        continue;
+      } else {
+        const videoInfo = {
+          id: item.aweme_id,
+          desc: item.desc,
+          url: item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ?? item.video?.play_addr?.url_list?.[0],
+          info: item,
+        };
+        spiderQueue.push(videoInfo);
+      }
     }
   }
   console.log("内容获取完成 有效列表项", spiderQueue.length, "项");

@@ -19,7 +19,12 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
 
   for (const item of videoQueue) {
     try {
-      await downloadVideoSingle(item, dir, ++_downloadCount);
+      if (Array.isArray(item.url)) {
+        console.log(`开始下载 ===> ${item.id}\n`);
+        item.url.forEach(async (url, index) => await downloadImageSingle({ ...item, url }, dir, index + 1));
+      } else {
+        await downloadVideoSingle(item, dir, ++_downloadCount);
+      }
     } catch (error) {
       hasErr = true;
       const errLogPath = resolve(process.cwd(), downloadDir, "logs");
@@ -49,7 +54,45 @@ export const downloadVideoSingle = async (item: SpiderQueue, dir: string, index?
   let progress = null;
 
   let downloadHelper = new download({
-    url: item.url,
+    url: item.url as string,
+    directory,
+    fileName,
+    headers,
+    maxAttempts: 3,
+    skipExistingFileName: true,
+    onResponse: (response) => {
+      totalSize = getFileSize(response.headers["content-length"]);
+      return true;
+    },
+    onProgress: (percentage) => {
+      progress = new progressBar(`${index ? `${index}: ` : ""}${item.id} 下载进度`, 50, totalSize);
+      progress.render({ completed: percentage, total: 100 });
+    },
+  });
+
+  await downloadHelper.download();
+  downloadHelper = null;
+  progress = null;
+};
+
+/**
+ * 下载单个图片
+ * @param item 下载项
+ * @param dir 下载目录
+ */
+export const downloadImageSingle = async (item: SpiderQueue, dir: string, index?: number) => {
+  const directory = resolve(process.cwd(), downloadDir, filenamify(dir), `${item.id}-${item.desc}`);
+  // 匹配图片拓展名
+  const extNameRegex = /\jpg|jpeg|png|gif|bmp|webp/i;
+  const extName = extNameRegex.exec(item.url as string)[0];
+  const fileName = `${item.id}_${index}.${extName}`;
+  await ensureDir(directory).catch(() => console.log("downloadVideoQueue: 下载目录创建失败"));
+
+  let totalSize = "0";
+  let progress = null;
+
+  let downloadHelper = new download({
+    url: item.url as string,
     directory,
     fileName,
     headers,
