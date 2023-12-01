@@ -11,10 +11,12 @@ export interface TiktokUserLikeList {
   video: TiktokUserLikeVideo;
 }
 
-export interface TiktokUserLikeVideo {
-  play_addr: {
-    url_list: string[];
-  };
+export interface TiktokUserLikeVideo extends TiktokUserLikeVideoAddr {
+  bit_rate?: TiktokUserLikeVideoAddr;
+}
+
+interface TiktokUserLikeVideoAddr {
+  play_addr?: { url_list?: string[] };
 }
 
 export interface SpiderQueue {

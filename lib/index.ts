@@ -1,11 +1,6 @@
 import config from "../config/config.json";
 import { SpiderQueue } from "../type";
-import {
-  getUserLikeVideo,
-  getUserPostVideo,
-  getUserSecId,
-  reptyErrorQueue,
-} from "./api";
+import { getUserVideo, getUserSecId, reptyErrorQueue } from "./api";
 import { downloadVideoQueue } from "./download";
 
 /**
@@ -25,10 +20,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   let _max_cursor = 0;
   let _pageCount = 0;
   let _max_retry = 1;
-
-  let getUserVideo: any = () => ({});
-  if (type === "like") getUserVideo = getUserLikeVideo;
-  if (type === "post") getUserVideo = getUserPostVideo;
+  const list_max_retry_limit = 10;
 
   // 循环分页
   while (_has_more) {
@@ -39,15 +31,18 @@ const loadQueue = async (user: string, type: string, limit: number) => {
     }
 
     console.log("获取内容 ===>", ++_pageCount, "页");
-    const { list, max_cursor, has_more } = await getUserVideo(
+    const { list, max_cursor, has_more } = await getUserVideo(type)(
       userSecId,
       _max_cursor
     );
 
     // 错误重试
     if (!list || list.length === 0) {
-      if (_max_retry <= 5) {
-        console.log("获取内容重试 ===> 重试次数", `${_max_retry} / 5`);
+      if (_max_retry <= list_max_retry_limit) {
+        console.log(
+          "获取内容重试 ===> 重试次数",
+          `${_max_retry} / ${list_max_retry_limit}`
+        );
         _max_retry++;
         _pageCount--;
         continue;
@@ -66,7 +61,9 @@ const loadQueue = async (user: string, type: string, limit: number) => {
       const videoInfo = {
         id: item.aweme_id,
         desc: item.desc,
-        url: item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ?? item.video?.play_addr?.url_list?.[0],
+        url:
+          item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ??
+          item.video?.play_addr?.url_list?.[0],
         info: item,
       };
       spiderQueue.push(videoInfo);

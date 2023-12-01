@@ -65,7 +65,7 @@ const getTTWid = async () => {
  * @param type
  * @returns
  */
-const getUserVideo = (type: string) => {
+export const getUserVideo = (type: string) => {
   let requestUrl = "";
   if (type === "post") requestUrl = postBaseUrl;
   if (type === "like") requestUrl = likeBaseUrl;
@@ -107,9 +107,6 @@ const getUserVideo = (type: string) => {
     };
   };
 };
-
-export const getUserLikeVideo = getUserVideo("like");
-export const getUserPostVideo = getUserVideo("post");
 
 /**
  * 重试失败任务队列
