@@ -20,7 +20,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   let _max_cursor = 0;
   let _pageCount = 0;
   let _max_retry = 1;
-  const list_max_retry_limit = 10;
+  const list_max_retry_limit = 15;
 
   // 循环分页
   while (_has_more) {

@@ -1,6 +1,8 @@
+import { fileTypeFromFile } from "file-type";
 import fs from "fs-extra";
 import path from "path";
 import { stringify } from "qs";
+import sharp from "sharp";
 import { odin_tt, passport_csrf_token } from "../config/config.json";
 import { getXB } from "./X-Bogus";
 import { HDDownloadUrl } from "./config";
@@ -151,4 +153,25 @@ export const getDateTimeString = (): string => {
   const hour = now.getHours().toString().padStart(2, "0");
   const minute = now.getMinutes().toString().padStart(2, "0");
   return `${year}${month}${day}T${hour}${minute}`;
+};
+
+/**
+ * 将 PNG 转换为 JPEG
+ * @param inputFilePath
+ * @param outputFilePath
+ */
+export const convert2JPEG = async (inputFilePath: string, outputFilePath: string) => {
+  try {
+    await sharp(inputFilePath)
+      .jpeg({ quality: 100, progressive: true, chromaSubsampling: "4:4:4" })
+      .toFile(outputFilePath);
+    console.log(`${inputFilePath} Image converted successfully!`);
+  } catch (error) {
+    console.error("Error converting image:", error);
+  }
+};
+
+export const checkFileType = async (filePath: string) => {
+  const fileType = await fileTypeFromFile(filePath);
+  return fileType ? fileType.ext : "unknown";
 };

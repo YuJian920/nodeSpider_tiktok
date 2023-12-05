@@ -46,9 +46,11 @@ pnpm install
 pnpm run start
 ```
 
-如果获取列表频繁出现失败，请修改 config.js 下的 odin_tt 和 passport_csrf_token 字段
+如果获取列表频繁出现失败，请修改 `config.js` 下的 `odin_tt` 和 `passport_csrf_token` 字段
 
-现阶段还没有实现自动用用户名字命名下载文件夹，如果你需要下载多个用户的喜欢列表并存在分类的需求，可能需要给已存在的文件夹手动重命名
+抖音下载的图片默认为 webp 格式，在 `utils/fileHelper.tsx` 中有一些工具函数可以对图片格式进行转换，默认为无压缩转换，可以根据需要自行修改转换参数。你可以使用 `npm run helper` 来运行这些函数。
+
+在之前的版本中，对于喜欢或者发布列表中的图片类型，下载后可能会出现格式错误的问题，`utils/fileHelper.tsx` 提供了一个检查文件是否为 Mp4 格式的工具函数。
 
 ## 感谢
 

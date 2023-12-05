@@ -21,7 +21,9 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
     try {
       if (Array.isArray(item.url)) {
         console.log(`开始下载 ===> ${item.id}\n`);
-        item.url.forEach(async (url, index) => await downloadImageSingle({ ...item, url }, dir, index + 1));
+        for await (const [index, url] of item.url.entries()) {
+          await downloadImageSingle({ ...item, url }, dir, index + 1);
+        }
       } else {
         await downloadVideoSingle(item, dir, ++_downloadCount);
       }
