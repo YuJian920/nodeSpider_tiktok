@@ -52,25 +52,16 @@ const loadQueue = async (user: string, type: string, limit: number) => {
     _max_cursor = max_cursor;
 
     for (let item of list) {
-      // 图片类型
-      if (item.aweme_type === 68) {
-        const imageInfo = {
-          id: item.aweme_id,
-          desc: item.desc,
-          url: item.images.map((item) => item.url_list[0]) ?? item.images.map((item) => item.download_url_list[0]),
-          info: item,
-        };
-        spiderQueue.push(imageInfo);
-        continue;
-      } else {
-        const videoInfo = {
-          id: item.aweme_id,
-          desc: item.desc,
-          url: item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ?? item.video?.play_addr?.url_list?.[0],
-          info: item,
-        };
-        spiderQueue.push(videoInfo);
-      }
+      const spiderInfo = {
+        id: item.aweme_id,
+        desc: item.desc,
+        url:
+          item.aweme_type === 68
+            ? item.images.map((item) => item.url_list[0]) ?? item.images.map((item) => item.download_url_list[0])
+            : item.video?.bit_rate?.[0]?.play_addr?.url_list?.[0] ?? item.video?.play_addr?.url_list?.[0],
+        info: item,
+      };
+      spiderQueue.push(spiderInfo);
     }
   }
   console.log("内容获取完成 有效列表项", spiderQueue.length, "项");

@@ -84,7 +84,7 @@ const checkFileTypeisMp4 = async (directory: string) => {
 
 // 运行脚本之前请明白你在做什么，对目录的操作可能导致文件丢失！
 (async () => {
-  const directory = resolve(__dirname, "../download/like_user1");
+  const directory = resolve(__dirname, "../download/like_user2");
   // await traverseDirectories(directory);
   // await deleteWebp(directory);
   // await deleteEmptyDirectories(directory);

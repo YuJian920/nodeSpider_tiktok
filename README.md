@@ -52,6 +52,11 @@ pnpm run start
 
 在之前的版本中，对于喜欢或者发布列表中的图片类型，下载后可能会出现格式错误的问题，`utils/fileHelper.tsx` 提供了一个检查文件是否为 Mp4 格式的工具函数。
 
+## 可能存在的一些问题
+
+图片转换需要用到 sharp 库，package.json 中默认安装的是和平台绑定的版本，如果你使用 Linux Mac 或者其他操作系统，可能会出现安装依赖或者脚本运行错误的问题，请修改 package.json 中的 sharp 版本或者直接删除它。
+脚本的主要功能：批量下载，是不需要 sharp 库的。
+
 ## 感谢
 
 默认的 odin_tt、passport_csrf_token 和 X-Bogus 的获取算法均来自 Johnserf-Seed/TikTokDownload 项目，非常感谢

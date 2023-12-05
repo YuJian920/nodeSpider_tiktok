@@ -32,3 +32,8 @@ export interface SpiderQueue {
   url: string | string[];
   info: any;
 }
+
+export interface DownloadCoreOption {
+  index: number;
+  id: string;
+}
