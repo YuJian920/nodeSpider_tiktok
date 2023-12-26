@@ -23,8 +23,9 @@
     "username": ""              // 下载的文件夹名字，如果不填则默认为下标
   }
 ]
-"odin_tt": ""                   // cookies 中的 odin_tt，如果工作正常则不需要修改
-"passport_csrf_token": ""       // cookies 中的 passport_csrf_token，如果工作正常则不需要修改
+"odin_tt": ""                   // cookies 中的 odin_tt
+"passport_csrf_token": ""       // cookies 中的 passport_csrf_token
+"sessionid": "",                // cookies 中的 sessionid
 "max_retry": 50                 // 获取内容的最大重试次数
 "autoRetryDownload": true       // 是否自动重试下载失败的文件
 "downloadDir": "download/",     // 下载目录
@@ -46,11 +47,11 @@ pnpm install
 pnpm run start
 ```
 
-如果获取列表频繁出现失败，请修改 `config.js` 下的 `odin_tt` 和 `passport_csrf_token` 字段
+如果获取列表频繁出现失败，请修改 `config.js` 下的 `odin_tt`、`passport_csrf_token` 和 `sessionid` 字段
 
 抖音下载的图片默认为 webp 格式，在 `utils/fileHelper.tsx` 中有一些工具函数可以对图片格式进行转换，默认为无压缩转换，可以根据需要自行修改转换参数。你可以使用 `npm run helper` 来运行这些函数。
 
-在之前的版本中，对于喜欢或者发布列表中的图片类型，下载后可能会出现格式错误的问题，`utils/fileHelper.tsx` 提供了一个检查文件是否为 Mp4 格式的工具函数。
+在之前的版本中，对于喜欢或者发布列表中的图片类型，下载后可能会出现格式错误的问题，`utils/fileHelper.tsx` 提供了一个检查文件是否为 mp4 格式的工具函数。
 
 ## 可能存在的一些问题
 
@@ -59,7 +60,7 @@ pnpm run start
 
 ## 感谢
 
-默认的 odin_tt、passport_csrf_token 和 X-Bogus 的获取算法均来自 Johnserf-Seed/TikTokDownload 项目，非常感谢
+X-Bogus 的获取算法来自 Johnserf-Seed/TikTokDownload 项目，非常感谢
 
 [Johnserf-Seed/TiktokDownload](https://github.com/Johnserf-Seed/TikTokDownload)
 

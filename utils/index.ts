@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import path from "path";
 import { stringify } from "qs";
 import sharp from "sharp";
-import { odin_tt, passport_csrf_token } from "../config/config.json";
+import { odin_tt, passport_csrf_token, sessionid } from "../config/config.json";
 import { getXB } from "./X-Bogus";
 import { HDDownloadUrl } from "./config";
 
@@ -46,6 +46,7 @@ export const getCookies = async (getTtwidFn) => {
     ttwid,
     `odin_tt=${odin_tt}`,
     `passport_csrf_token=${passport_csrf_token}`,
+    `sessionid=${sessionid}`,
   ].join(";");
 
   return cookies;
@@ -60,7 +61,7 @@ export const getCookies = async (getTtwidFn) => {
 export const transformParams = (sec_user_id: string, max_cursor: number) => {
   const params = {
     sec_user_id,
-    count: 35,
+    count: 20,
     max_cursor,
     aid: 6383,
     cookie_enabled: true,

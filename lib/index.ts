@@ -48,7 +48,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
 
     // 外部变量控制循环
     _max_retry = 1;
-    _has_more = has_more;
+    _has_more = !!has_more;
     _max_cursor = max_cursor;
 
     for (let item of list) {
