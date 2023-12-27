@@ -12,5 +12,6 @@
   "sessionid": "",
   "downloadDir": "download/",
   "max_retry": 50,
-  "autoRetryDownload": true
+  "autoRetryDownload": true,
+  "workerNum": 1
 }

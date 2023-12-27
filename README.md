@@ -1,6 +1,6 @@
 # nodespider_tiktok
 
-一个用 Node.js 写的批量去水印下载抖音用户发布/喜欢列表视频的爬虫
+一个用 Node.js 写的批量去水印多线程下载抖音用户发布/喜欢列表视频的爬虫
 
 ## Features
 
@@ -9,6 +9,7 @@
 3. 支持自动跳过已存在的文件
 4. 支持流式下载，不会占用过多内存
 5. 支持自动保存错误日志
+6. 支持多线程下载
 
 ## 使用方法
 
@@ -46,8 +47,6 @@ pnpm install
 // 启动爬虫
 pnpm run start
 ```
-
-如果获取列表频繁出现失败，请修改 `config.js` 下的 `odin_tt`、`passport_csrf_token` 和 `sessionid` 字段
 
 抖音下载的图片默认为 webp 格式，在 `utils/fileHelper.tsx` 中有一些工具函数可以对图片格式进行转换，默认为无压缩转换，可以根据需要自行修改转换参数。你可以使用 `npm run helper` 来运行这些函数。
 
