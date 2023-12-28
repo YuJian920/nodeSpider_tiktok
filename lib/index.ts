@@ -66,7 +66,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   }
   console.log("内容获取完成 有效列表项", spiderQueue.length, "项");
 
-  return { spiderQueue };
+  return spiderQueue;
 };
 
 (async () => {
@@ -74,7 +74,7 @@ const loadQueue = async (user: string, type: string, limit: number) => {
   for (const { user, type, limit, username } of config.userList) {
     console.log(`开始处理第 ${index + 1} 个用户下载`);
     const downloadDir = username || `${type}_user${index}`;
-    const { spiderQueue } = await loadQueue(user, type, limit);
+    const spiderQueue = await loadQueue(user, type, limit);
     const hasErr = await downloadVideoQueue(spiderQueue, downloadDir);
 
     await reptyErrorQueue(hasErr, downloadDir);

@@ -18,13 +18,11 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
   if (isMainThread) {
     const progressBar = new cliProgress.MultiBar(
       {
-        fps: 30,
         hideCursor: null,
         stopOnComplete: true,
-        clearOnComplete: true,
         linewrap: true,
         forceRedraw: true,
-        format: "{id}: 下载进度 {bar} {percentage}% | Size: {totalSize} | ETA: {eta}s",
+        format: "{id}: 下载进度 {bar} {percentage}% | Size: {totalSize}MB | ETA: {eta}s",
       },
       cliProgress.Presets.shades_grey
     );
@@ -32,10 +30,7 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
     const workerData = [];
     const len = Math.ceil(videoQueue.length / workerNum);
     for (let i = 0; i < workerNum; i++) workerData.push(videoQueue.slice(i * len, (i + 1) * len));
-
-    const workers = workerData.map(
-      (data, index) => new Worker(__filename, { workerData: { videoQueue: data, dir, index } })
-    );
+    const workers = workerData.map((data) => new Worker(__filename, { workerData: { videoQueue: data, dir } }));
 
     const promises = workers.map(
       (worker) =>

@@ -13,5 +13,5 @@
   "downloadDir": "download/",
   "max_retry": 50,
   "autoRetryDownload": true,
-  "workerNum": 1
+  "workerNum": 4
 }

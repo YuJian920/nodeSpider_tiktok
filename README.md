@@ -30,6 +30,7 @@
 "max_retry": 50                 // 获取内容的最大重试次数
 "autoRetryDownload": true       // 是否自动重试下载失败的文件
 "downloadDir": "download/",     // 下载目录
+"workerNum": 4                  // 下载线程数
 ```
 
 用户喜欢列表和发布作品只能下载公开状态的列表
@@ -55,7 +56,6 @@ pnpm run start
 ## 可能存在的一些问题
 
 图片转换需要用到 sharp 库，package.json 中默认安装的是和平台绑定的版本，如果你使用 Linux Mac 或者其他操作系统，可能会出现安装依赖或者脚本运行错误的问题，请修改 package.json 中的 sharp 版本或者直接删除它。
-脚本的主要功能：批量下载，是不需要 sharp 库的。
 
 ## 感谢
 
