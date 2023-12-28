@@ -33,6 +33,18 @@ export interface SpiderQueue {
   info: any;
 }
 
-export interface DownloadCoreOption {
-  id: string;
+export interface DownloadProgressMessage {
+  type: "progress";
+  message: {
+    id: string;
+    percentage: number;
+    totalSize: string;
+  };
 }
+
+export interface DownloadDoneMessage {
+  type: "done";
+  hasErr: boolean;
+}
+
+export type DownloadCoreMessage = DownloadProgressMessage | DownloadDoneMessage;

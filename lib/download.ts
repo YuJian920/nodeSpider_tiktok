@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import download from "nodejs-file-downloader";
 import { Worker, isMainThread, parentPort, workerData } from "worker_threads";
 import { downloadDir, workerNum } from "../config/config.json";
-import { DownloadCoreOption, SpiderQueue } from "../type";
+import { DownloadCoreMessage, SpiderQueue } from "../type";
 import { errQueueToJson, getDateTimeString, getFileSize, logError } from "../utils";
 import { headerOption as headers } from "../utils/config";
 import cliProgress from "cli-progress";
@@ -18,11 +18,13 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
   if (isMainThread) {
     const progressBar = new cliProgress.MultiBar(
       {
-        hideCursor: null,
+        hideCursor: true,
         stopOnComplete: true,
         linewrap: true,
         forceRedraw: true,
-        format: "{id}: 下载进度 {bar} {percentage}% | Size: {totalSize}MB | ETA: {eta}s",
+        barsize: 60,
+        autopadding: true,
+        format: "下载 {id}: {bar} {percentage}% | Size: {totalSize}MB | ETA: {eta}s",
       },
       cliProgress.Presets.shades_grey
     );
@@ -35,7 +37,7 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
     const promises = workers.map(
       (worker) =>
         new Promise((resolve, reject) => {
-          worker.on("message", (msg) => {
+          worker.on("message", (msg: DownloadCoreMessage) => {
             if (msg.type === "progress") {
               const { id, percentage, totalSize } = msg.message;
               if (!progressDict[id]) progressDict[id] = progressBar.create(100, 0);
@@ -49,9 +51,9 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
         })
     );
 
-    const results = await Promise.all(promises);
-    // console.log("下载完成 任务结束");
-    return results.some((result) => result === true);
+    const results = await Promise.allSettled(promises);
+    console.log("下载完成 任务结束");
+    return results.every((result) => result.status === "fulfilled" && result.value);
   } else {
     let hasErr = false;
     for await (const [index, item] of workerData.videoQueue.entries()) {
@@ -79,7 +81,7 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
  * @param option 下载选项
  * @returns
  */
-const downloadCore = (url: string, directory: string, fileName: string, option: DownloadCoreOption) => {
+const downloadCore = (url: string, directory: string, fileName: string, id: string) => {
   let totalSize = "0";
 
   return new download({
@@ -94,7 +96,7 @@ const downloadCore = (url: string, directory: string, fileName: string, option: 
       return true;
     },
     onProgress: (percentage) => {
-      parentPort.postMessage({ type: "progress", message: { id: option.id, percentage, totalSize } });
+      parentPort.postMessage({ type: "progress", message: { id, percentage, totalSize } });
     },
   });
 };
@@ -109,7 +111,7 @@ export const downloadVideoSingle = async (item: SpiderQueue, dir: string) => {
   const fileName = `${item.id}-${filenamify(item.desc)}.mp4`;
   await ensureDir(directory).catch((error) => console.log("downloadVideoQueue: 下载目录创建失败"));
 
-  let downloadHelper = downloadCore(item.url as string, directory, fileName, { id: item.id });
+  let downloadHelper = downloadCore(item.url as string, directory, fileName, item.id);
   await downloadHelper.download();
 };
 
@@ -127,7 +129,7 @@ export const downloadImageSingle = async (item: SpiderQueue, dir: string) => {
     const extName = extNameRegex.exec(urlItem)[0];
     const fileName = `${item.id}_${entriesIndex}.${extName}`;
 
-    let downloadHelper = downloadCore(urlItem, directory, fileName, { id: item.id });
+    let downloadHelper = downloadCore(urlItem, directory, fileName, item.id);
     await downloadHelper.download();
   }
 };
