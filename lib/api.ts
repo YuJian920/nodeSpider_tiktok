@@ -128,7 +128,7 @@ export const reptyErrorQueue = async (repty: boolean, downloadType: string) => {
         const downItem = { id: queue.aweme_id, desc: queue.desc, url: downlinkList[index], info: {} };
 
         try {
-          await downloadVideoSingle(downItem, downloadType, index);
+          await downloadVideoSingle(downItem, downloadType);
           console.log(`尝试 ${queue.aweme_id} ===> 第${index + 1}次成功`);
           break;
         } catch (error) {

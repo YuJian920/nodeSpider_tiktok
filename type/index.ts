@@ -47,4 +47,9 @@ export interface DownloadDoneMessage {
   hasErr: boolean;
 }
 
-export type DownloadCoreMessage = DownloadProgressMessage | DownloadDoneMessage;
+export interface DownloadRecordMessage {
+  type: "record";
+  record: boolean;
+}
+
+export type DownloadCoreMessage = DownloadProgressMessage | DownloadDoneMessage | DownloadRecordMessage;

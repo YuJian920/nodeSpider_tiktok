@@ -28,6 +28,7 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
       },
       cliProgress.Presets.shades_grey
     );
+    let downloadRecord = 0;
     const progressDict = {};
     const workerData = [];
     const len = Math.ceil(videoQueue.length / workerNum);
@@ -42,7 +43,8 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
               const { id, percentage, totalSize } = msg.message;
               if (!progressDict[id]) progressDict[id] = progressBar.create(100, 0);
               progressDict[id].update(Number(percentage), { id, totalSize });
-            } else if (msg.type === "done") resolve(msg.hasErr);
+            } else if (msg.type === "record" && msg.record) downloadRecord++;
+            else if (msg.type === "done") resolve(msg.hasErr);
           });
           worker.on("error", reject);
           worker.on("exit", (code) => {
@@ -52,7 +54,8 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
     );
 
     const results = await Promise.allSettled(promises);
-    console.log("下载完成 任务结束");
+    progressBar.stop();
+    console.log("下载完成 任务结束 实际下载文件总数 ===>", downloadRecord, "/", videoQueue.length);
     return results.every((result) => result.status === "fulfilled" && result.value);
   } else {
     let hasErr = false;
@@ -81,7 +84,7 @@ export const downloadVideoQueue = async (videoQueue: SpiderQueue[], dir: string)
  * @param option 下载选项
  * @returns
  */
-const downloadCore = (url: string, directory: string, fileName: string, id: string) => {
+const downloadCore = (url: string, directory: string, fileName: string, id: string, last: boolean) => {
   let totalSize = "0";
 
   return new download({
@@ -98,6 +101,10 @@ const downloadCore = (url: string, directory: string, fileName: string, id: stri
     onProgress: (percentage) => {
       parentPort.postMessage({ type: "progress", message: { id, percentage, totalSize } });
     },
+    onBeforeSave: (finalName) => {
+      if (last) parentPort.postMessage({ type: "record", record: true });
+      return finalName;
+    },
   });
 };
 
@@ -111,7 +118,7 @@ export const downloadVideoSingle = async (item: SpiderQueue, dir: string) => {
   const fileName = `${item.id}-${filenamify(item.desc)}.mp4`;
   await ensureDir(directory).catch((error) => console.log("downloadVideoQueue: 下载目录创建失败"));
 
-  let downloadHelper = downloadCore(item.url as string, directory, fileName, item.id);
+  let downloadHelper = downloadCore(item.url as string, directory, fileName, item.id, true);
   await downloadHelper.download();
 };
 
@@ -129,7 +136,7 @@ export const downloadImageSingle = async (item: SpiderQueue, dir: string) => {
     const extName = extNameRegex.exec(urlItem)[0];
     const fileName = `${item.id}_${entriesIndex}.${extName}`;
 
-    let downloadHelper = downloadCore(urlItem, directory, fileName, item.id);
+    let downloadHelper = downloadCore(urlItem, directory, fileName, item.id, entriesIndex === item.url.length - 1);
     await downloadHelper.download();
   }
 };
