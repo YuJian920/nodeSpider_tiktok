@@ -128,7 +128,7 @@ export const downloadVideoSingle = async (item: SpiderQueue, dir: string) => {
  * @param dir 下载目录
  */
 export const downloadImageSingle = async (item: SpiderQueue, dir: string) => {
-  const directory = resolve(process.cwd(), downloadDir, filenamify(dir), `${item.id}-${item.desc}`);
+  const directory = resolve(process.cwd(), downloadDir, filenamify(dir), `${item.id}-${filenamify(item.desc)}`);
   const extNameRegex = /\jpg|jpeg|png|webp/i;
   await ensureDir(directory).catch(() => console.log("downloadVideoQueue: 下载目录创建失败"));
 
