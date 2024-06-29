@@ -8,8 +8,6 @@ import { DownloadCoreMessage, SpiderQueue } from "../type";
 import { errQueueToJson, getDateTimeString, getFileSize, logError } from "../utils";
 import { headerOption as headers } from "../utils/config";
 import cliProgress from "cli-progress";
-// 解决在 Node.js 16 以上版本 Worker 线程无法使用 ts-node 的问题
-import "ts-node/register";
 
 /**
  * 下载视频队列

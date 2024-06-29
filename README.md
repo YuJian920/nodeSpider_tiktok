@@ -11,6 +11,16 @@
 5. 支持自动保存错误日志
 6. 支持多线程下载
 
+## 写在前面
+脚本用 TypeScipt 编写，这会导致一个问题：Node.js 无法直接运行 TypeScript 代码，早先使用的是 tsx 来直接运行，但是当后来 Node.js 更新了更加严格的 ESM 规范后，这种方法就会导致一些问题：获取完列表之后，一直无法进行下载。
+
+目前还没有办法解决，详情参考：[New --import API breaks worker threads](https://github.com/privatenumber/tsx/issues/354)
+
+现阶段运行脚本有两种方法：
+1. Node.js 18 以下版本可以直接使用 tsx 运行脚本
+2. 使用 tsc 编译 ts 文件为 js 文件，然后使用 node 运行 js 文件
+3. 降级使用还未实现多线程下载的版本（不推荐）
+
 ## 使用方法
 
 在使用之前请先修改 config/config.json 配置文件
