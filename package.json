@@ -1,6 +1,6 @@
 {
   "name": "nodespider_tiktok",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "description": "一个用 Node.js 写的抖音用户发布/喜欢列表爬虫",
   "main": "lib/index.ts",
   "scripts": {
@@ -16,23 +16,24 @@
   "author": "YuJian",
   "license": "MIT",
   "dependencies": {
-    "@img/sharp-win32-x64": "^0.33.0",
+    "@img/sharp-win32-x64": "^0.33.4",
     "cli-progress": "^3.12.0",
-    "file-type": "^18.7.0",
+    "file-type": "^19.0.0",
     "filenamify": "^6.0.0",
     "fs-extra": "^11.2.0",
     "md5": "^2.3.0",
     "node-fetch": "^3.3.2",
-    "nodejs-file-downloader": "^4.12.1",
-    "qs": "^6.11.2",
-    "sharp": "0.33.0"
+    "nodejs-file-downloader": "^4.13.0",
+    "qs": "^6.12.1",
+    "sharp": "0.33.4",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.5",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.10.3",
-    "@types/qs": "^6.9.10",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.2"
+    "@types/node": "^20.14.9",
+    "@types/qs": "^6.9.15",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.2"
   }
 }

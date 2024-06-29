@@ -24,8 +24,8 @@
     "username": ""              // 下载的文件夹名字，如果不填则默认为下标
   }
 ]
-"odin_tt": ""                   // cookies 中的 odin_tt
-"passport_csrf_token": ""       // cookies 中的 passport_csrf_token
+"odin_tt": ""                   // 必填，cookies 中的 odin_tt
+"passport_csrf_token": ""       // 必填，cookies 中的 passport_csrf_token
 "sessionid": "",                // cookies 中的 sessionid
 "max_retry": 50                 // 获取内容的最大重试次数
 "autoRetryDownload": true       // 是否自动重试下载失败的文件
@@ -52,6 +52,8 @@ pnpm run start
 抖音下载的图片默认为 webp 格式，在 `utils/fileHelper.tsx` 中有一些工具函数可以对图片格式进行转换，默认为无压缩转换，可以根据需要自行修改转换参数。你可以使用 `npm run helper` 来运行这些函数。
 
 在之前的版本中，对于喜欢或者发布列表中的图片类型，下载后可能会出现格式错误的问题，`utils/fileHelper.tsx` 提供了一个检查文件是否为 mp4 格式的工具函数。
+
+**抖音修改了接口的限制，现在 config.json 中的 odin_tt、sessionid 和 passport_csrf_token 是必填项，如果你不填写，则只能获取第一页的数据。**
 
 ## 可能存在的一些问题
 
